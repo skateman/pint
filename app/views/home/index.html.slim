@@ -1,0 +1,134 @@
+#presentations ng-controller="presentationsController"
+  div ng-hide="!show_new" ng-init="show_new = false"
+    h2 New presentation
+    form enctype="multipart/form-data" method="post" action="/presentations"
+      .form-group
+        label.control-label Title
+        input.form-control type="text" name="presentation[title]" required="required"
+      .form-group
+        label.control-label Description
+        input.form-control type="text" name="presentation[description]"
+      .form-group
+        label.control-label File
+        input.form-control type="file" name="presentation[pdf]" required="required"
+      button.btn.btn-primary Submit
+      button.btn.btn-default type="reset" ng-click="show_new = false" Cancel
+
+  div ng-hide="!show_edit" ng-init="show_edit = false"
+    h2 Edit presentation
+    form name="presentationForm" novalidate="novalidate" ng-submit="update(presentationForm.$valid)"
+      .form-group ng-class="{'has-error': presentationForm['presentation[title]'].$invalid}"
+        label.control-label Title
+        input.form-control type="text" required="required" name="presentation[title]" ng-model="presentation.title"
+      .form-group
+        label.control-label Description
+        input.form-control type="text" name="presentation[description]" ng-model="presentation.description"
+
+      h3
+        | Questions
+        button.pull-right.btn.btn-success.btn-sm type="button" ng-click="newQuestion()"
+          span.glyphicon.glyphicon-plus
+          |  New question
+      div.clearfix
+      div ng-repeat="question in questions track by $index" ng-form="questionForm"
+        .row
+          .col-md-10
+            .form-group ng-class="{'has-error': questionForm['question[body]'].$invalid}"
+              label.control-label Question
+              input.form-control type="text" required="required" name="question[body]" ng-model="question.body"
+          .col-md-2
+            button.btn.btn-xs.btn-danger.pull-right type="button" ng-click="destroyQuestion($index)"
+              span.glyphicon.glyphicon-trash
+            .form-group ng-class="{'has-error': questionForm['question[slide]'].$invalid}" ng-init="question.form = questionForm"
+              label.control-label Slide
+              input.form-control type="number" min="1" max="{{ presentation.slides-1 }}" name="question[slide]" required="required" ng-model="question.slide" ng-change="verifySlides()"
+        .row
+          .col-md-8
+            div ng-repeat="choice in question.choices track by $index" ng-form="choiceForm"
+              button.btn.btn-xs.btn-danger.pull-right type="button" ng-hide="$index < 2" ng-click="destroyChoice($index, $parent.$index)"
+                span.glyphicon.glyphicon-trash
+              .form-group ng-class="{'has-error': choiceForm.choice.$invalid}"
+                label.control-label
+                  | Choice #
+                  | {{ $index + 1 }}
+                input.form-control type="text" name="choice" required="required" ng-model="question.choices[$index]"
+            button.btn.btn-xs.btn-success type="button" ng-click="newChoice($index)"
+              span.glyphicon.glyphicon-plus
+              |   New Choice
+          .col-md-4
+            img.img-responsive src="/presentation/{{ presentation.id }}/slide-{{ question.slide }}.jpg"
+        hr
+      button.btn.btn-primary Submit
+      button.btn.btn-default type="button" ng-click="show_edit = false" Cancel
+
+
+  div ng-hide="show_new || show_edit || show_pres"
+    div.pull-right
+      button.btn.btn-success type="button" ng-click="new()"
+        span.glyphicon.glyphicon-plus
+        |  New presentation
+    table.table.table-striped.table-condensed
+      thead
+        tr
+          th Title
+          th Description
+          th Slides
+          th Created at
+          th
+      tbody
+        tr ng-repeat="presentation in presentations"
+          td
+            | {{ presentation.title }}
+          td
+            | {{ presentation.description }}
+          td
+            | {{ presentation.slides }}
+          td
+            | {{ presentation.created_at }}
+          td
+            .btn-group role="group"
+              button.btn.btn-xs.btn-primary type="button" ng-click="start($index)"
+                span.glyphicon.glyphicon-play-circle
+                |  Start
+              button.btn.btn-xs.btn-warning type="button" ng-click="edit($index)"
+                span.glyphicon.glyphicon-edit
+                |  Edit
+              button.btn.btn-xs.btn-danger type="button" ng-click="destroy($index)"
+                span.glyphicon.glyphicon-trash
+                |  Delete
+
+  #presenter ng-init="show_pres = false" ng-hide="!show_pres"
+    .col-md-8
+      section ng-repeat="slide in loop(presentation.slides) track by $index"
+        img.slide src="/presentation/{{ presentation.id }}/slide-{{ $index }}.jpg" ng-hide="$index != session.slide"
+    .col-md-4
+      .row
+        .col-md-4
+          button.btn.btn-lg.btn-success type="button" ng-click="prevSlide()"
+            span.glyphicon.glyphicon-chevron-left
+        .col-md-4
+          button.btn.btn-lg.btn-danger type="button" ng-click="exit()"
+            span.glyphicon.glyphicon-remove
+        .col-md-4
+          button.btn.btn-lg.btn-success type="button" ng-click="nextSlide()"
+            span.glyphicon.glyphicon-chevron-right
+      .clearfix
+      div style="padding-top: 30px;"
+        .poll ng-hide="session.slide == 0"
+          h3.text-center
+            | {{ session.question.body }}
+          ul
+            li ng-repeat="choice in session.question.choices"
+              | {{ choice }}
+          h4.text-center ng-hide="session.answers == 0" Results
+          .results ng-repeat="choice in session.question.choices"
+            .progress ng-hide="session.results[choice] == undefined"
+              .progress-bar style="width: {{ getPercent(choice) }}%"
+                span
+                  | {{ choice }} ({{ session.results[choice] }})
+        .qr ng-hide="session.slide > 0"
+          h3.text-center
+            | {{ presentation.title }}
+          strong
+            | {{ presentation.description }}
+          canvas#qr-code

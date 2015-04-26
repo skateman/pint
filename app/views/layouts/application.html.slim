@@ -1,0 +1,11 @@
+doctype html
+html
+  head
+    title WAP
+    = stylesheet_link_tag 'application', media: 'all'
+    = csrf_meta_tags
+  body ng-app="pintApp"
+    .container
+      h1.text-center pINT
+      = yield
+    = javascript_include_tag 'application'
