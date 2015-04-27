@@ -2,6 +2,14 @@
 # All this logic will automatically be available in application.js.
 # You can use CoffeeScript in this file: http://coffeescript.org/
 
+$ ->
+  $(document).bind 'keydown', 'left', ->
+    $('#prevBtn').trigger 'click'
+  $(document).bind 'keydown', 'right', ->
+    $('#nextBtn').trigger 'click'
+  $(document).bind 'keydown', 'esc', ->
+    $('#exitBtn').trigger 'click'
+
 app = angular.module 'pintApp', [], ($locationProvider) ->
   $locationProvider.html5Mode
     enabled: true

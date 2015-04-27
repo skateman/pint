@@ -12,6 +12,7 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require jquery-hotkeys
 //= require bootstrap-sprockets
 //= require angular
 //= require qr

@@ -14,6 +14,7 @@ gem 'slim-rails'
 gem 'angularjs-rails'
 gem 'bootstrap-sass'
 gem 'rmagick'
+gem 'jquery-hotkeys-rails'
 group :development, :test do
   gem 'byebug'
   gem 'web-console', '~> 2.0'
