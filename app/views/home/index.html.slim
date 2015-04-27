@@ -16,7 +16,7 @@
 
   div ng-hide="!show_edit" ng-init="show_edit = false"
     h2 Edit presentation
-    form name="presentationForm" novalidate="novalidate" ng-submit="update(presentationForm.$valid)"
+    form name="presentationForm" novalidate="novalidate" ng-submit="update(presentationForm)"
       .form-group ng-class="{'has-error': presentationForm['presentation[title]'].$invalid}"
         label.control-label Title
         input.form-control type="text" required="required" name="presentation[title]" ng-model="presentation.title"
@@ -120,7 +120,7 @@
           ul
             li ng-repeat="choice in session.question.choices"
               | {{ choice }}
-          h4.text-center ng-hide="session.answers == 0" Results
+          h4.text-center ng-hide="session.answers == 0 && session.question.body == undefined" Results
           .results ng-repeat="choice in session.question.choices"
             .progress ng-hide="session.results[choice] == undefined"
               .progress-bar style="width: {{ getPercent(choice) }}%"

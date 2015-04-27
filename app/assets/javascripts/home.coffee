@@ -99,7 +99,8 @@ app.controller 'presentationsController', ($scope, $http, $location, $interval) 
 
   # Update an existing presentation
   $scope.update = (b) ->
-    if b
+    $scope.verifySlides()
+    if b.$valid
       angular.forEach $scope.toDeleteQuestions, (q) ->
         $http.delete("/presentations/#{$scope.presentation.id}/questions/#{q}")
       angular.forEach $scope.questions, (q) ->

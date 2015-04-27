@@ -64,11 +64,12 @@ class SessionsController < ApplicationController
     end
 
     def build_hash(s)
+      results = s.aggregate
       {
         :id           => s.id,
         :question     => s.current_question,
-        :answers      => s.answers.length,
-        :results      => s.aggregate,
+        :answers      => results.map {|_,v| v.to_i}.reduce(:+),
+        :results      => results,
         :slide        => s.slide,
         :presentation => s.presentation
       }
