@@ -58,7 +58,7 @@
           .col-md-4
             img.img-responsive src="/presentation/{{ presentation.id }}/slide-{{ question.slide }}.jpg"
         hr
-      button.btn.btn-primary Submit
+      button.btn.btn-primary ng-disabled="presentationForm.$invalid" Submit
       button.btn.btn-default type="button" ng-click="show_edit = false" Cancel
 
 
